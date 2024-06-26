@@ -2,6 +2,7 @@ package io.github.gronnmann.coinflipper.bets;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -88,7 +89,7 @@ public class BettingManager {
 		Animation animation = AnimationsManager.getManager().getAnimationToUse(p);
 		
 		//Rest
-		Bet b = new Bet(p.getName(), side, amount, this.getNextAvaibleID(), booster, animation);
+		Bet b = new Bet(p.getUniqueId().toString(), side, amount, this.getNextAvaibleID(), booster, animation);
 		bets.add(b);
 		return b;
 	}
@@ -210,7 +211,7 @@ public class BettingManager {
 	
 	public void clearBets(){
 		for (Bet b : bets){
-			CoinFlipper.getEcomony().depositPlayer(b.getPlayer(), b.getAmount());
+			CoinFlipper.getEcomony().depositPlayer(Bukkit.getOfflinePlayer(UUID.fromString(b.getPlayer())), b.getAmount());
 		}
 		bets.clear();
 		SelectionScreen.getInstance().refreshGameManager();
@@ -226,7 +227,7 @@ public class BettingManager {
 		}
 			
 		for (Bet b : BettingManager.getManager().getBets()){
-			if (b.getPlayer().equals(p.getName())){
+			if (b.getPlayer().equals(p.getUniqueId().toString())){
 				bets++;
 			}
 		}

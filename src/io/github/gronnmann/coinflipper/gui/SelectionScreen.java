@@ -1,6 +1,7 @@
 package io.github.gronnmann.coinflipper.gui;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -119,7 +120,7 @@ public class SelectionScreen implements Listener{
 	private ItemStack getSkull(Bet b){
 		ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (byte)3);
 		SkullMeta sm = (SkullMeta)skull.getItemMeta();
-		sm.setOwner(b.getPlayer());
+		sm.setOwner(Bukkit.getOfflinePlayer(UUID.fromString(b.getPlayer())).getName());
 		ArrayList<String> lore = new ArrayList<String>();
 		lore.add(Message.MENU_HEAD_PLAYER.getMessage().replace("%PLAYER%", b.getPlayer()));
 		lore.add(Message.MENU_HEAD_MONEY.getMessage().replace("%MONEY%", GeneralUtils.getFormattedNumbers(b.getAmount())));
@@ -178,7 +179,7 @@ public class SelectionScreen implements Listener{
 		//Removal of bet
 		if (e.isRightClick() 	){
 			//Own remove
-			if (p.getName().equals(b.getPlayer())){
+			if (p.getName().equals(Bukkit.getOfflinePlayer(UUID.fromString(b.getPlayer())).getName())){
 				if (!p.hasPermission("coinflipper.remove.self"))return;
 				if (removers.contains(p.getName())){
 					BettingManager.getManager().removeBet(b);
@@ -210,15 +211,15 @@ public class SelectionScreen implements Listener{
 				if (removers.contains(p.getName())){
 					BettingManager.getManager().removeBet(b);
 					this.refreshGameManager();
-					p.sendMessage(Message.BET_REMOVE_OTHER_SUCCESSFUL.getMessage().replace("%PLAYER%", b.getPlayer()));
-					Player bP = Bukkit.getPlayer(b.getPlayer());
+					p.sendMessage(Message.BET_REMOVE_OTHER_SUCCESSFUL.getMessage().replace("%PLAYER%", Bukkit.getOfflinePlayer(UUID.fromString(b.getPlayer())).getName()));
+					Player bP = Bukkit.getPlayer(UUID.fromString(b.getPlayer()));
 					if (bP != null){
 						bP.sendMessage(Message.BET_REMOVE_OTHER_NOTIFICATION.getMessage());
 					}
 					
-					CoinFlipper.getEcomony().depositPlayer(b.getPlayer(), b.getAmount());
+					CoinFlipper.getEcomony().depositPlayer(Bukkit.getOfflinePlayer(UUID.fromString(b.getPlayer())), b.getAmount());
 				}else{
-					p.sendMessage(Message.BET_REMOVE_OTHER_CONFIRM.getMessage().replace("%PLAYER%", b.getPlayer()));
+					p.sendMessage(Message.BET_REMOVE_OTHER_CONFIRM.getMessage().replace("%PLAYER%", Bukkit.getOfflinePlayer(UUID.fromString(b.getPlayer())).getName()));
 					removers.add(p.getName());
 					final String pN = p.getName();
 					new BukkitRunnable() {
@@ -239,7 +240,7 @@ public class SelectionScreen implements Listener{
 		
 		//Challenging
 		//Check if player challenges himself
-		if (p.getName().equals(b.getPlayer())){
+		if (p.getUniqueId().toString().equals(b.getPlayer())){
 			p.sendMessage(Message.BET_CHALLENGE_CANTSELF.getMessage());
 			return;
 		}
@@ -269,8 +270,8 @@ public class SelectionScreen implements Listener{
 		
 		 
 		//Add money stats
-		OfflinePlayer p1 = Bukkit.getOfflinePlayer(p.getName());
-		OfflinePlayer p2 = Bukkit.getOfflinePlayer(b.getPlayer());
+		OfflinePlayer p1 = Bukkit.getOfflinePlayer(p.getUniqueId());
+		OfflinePlayer p2 = Bukkit.getOfflinePlayer(UUID.fromString(b.getPlayer()));
 		
 		StatsManager.getManager().getStats(p1.getUniqueId().toString()).addMoneySpent(b.getAmount());
 		StatsManager.getManager().getStats(p2.getUniqueId().toString()).addMoneySpent(b.getAmount());
@@ -316,7 +317,7 @@ public class SelectionScreen implements Listener{
 		GamesManager.getManager().setSpinning(p.getName(), true);
 		GamesManager.getManager().setSpinning(b.getPlayer(), true);
 		
-		this.generateAnimations(p.getName(), b.getPlayer(), winner, winAmount, b.getAnimation().getName());
+		this.generateAnimations(p.getName(), Bukkit.getOfflinePlayer(UUID.fromString(b.getPlayer())).getName(), winner, winAmount, b.getAnimation().getName());
 		if (!ConfigVar.ANIMATIONS_ENABLED.getBoolean()) {
 			p.closeInventory();
 		}

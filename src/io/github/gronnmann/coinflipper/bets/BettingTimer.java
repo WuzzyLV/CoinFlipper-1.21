@@ -1,6 +1,7 @@
 package io.github.gronnmann.coinflipper.bets;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -30,9 +31,9 @@ public class BettingTimer extends BukkitRunnable{
 		
 		for (Bet b : toRemove){
 			
-			CoinFlipper.getEcomony().depositPlayer(b.getPlayer(), b.getAmount());
+			CoinFlipper.getEcomony().depositPlayer(Bukkit.getOfflinePlayer(UUID.fromString(b.getPlayer())), b.getAmount());
 			
-			Player pB = Bukkit.getPlayer(b.getPlayer());
+			Player pB = Bukkit.getPlayer(UUID.fromString(b.getPlayer()));
 			if (pB != null) {
 				pB.sendMessage(Message.BET_EXPIRE_REFUND.getMessage().replace("%MONEY%", b.getAmount()+""));
 			}
